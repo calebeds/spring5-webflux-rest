@@ -16,21 +16,22 @@ import java.util.Objects;
 @Setter
 @Builder
 @Document
-public class Category {
+public class Vendor {
     @Id
     private String id;
-    private String description;
+    private String firstName;
+    private String lastName;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Category category = (Category) o;
-        return Objects.equals(id, category.id) && Objects.equals(description, category.description);
+        Vendor vendor = (Vendor) o;
+        return Objects.equals(id, vendor.id) && Objects.equals(firstName, vendor.firstName) && Objects.equals(lastName, vendor.lastName);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, description);
+        return Objects.hash(id, firstName, lastName);
     }
 }
