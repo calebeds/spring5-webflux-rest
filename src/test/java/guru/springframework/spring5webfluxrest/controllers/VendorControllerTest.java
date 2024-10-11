@@ -63,4 +63,18 @@ public class VendorControllerTest {
                 .expectStatus()
                 .isCreated();
     }
+
+    @Test
+    public void testUpdate() {
+        given(vendorRepository.save(any(Vendor.class)))
+                .willReturn(Mono.just(Vendor.builder().build()));
+
+        Mono<Vendor> vendorToUpdateMono = Mono.just(Vendor.builder().firstName("Jim").lastName("Carey").build());
+
+        webTestClient.put().uri(VendorController.API_V1_VENDORS + "/someid")
+                .body(vendorToUpdateMono, Vendor.class)
+                .exchange()
+                .expectStatus()
+                .isOk();
+    }
 }
