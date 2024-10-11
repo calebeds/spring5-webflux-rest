@@ -31,7 +31,7 @@ public class VendorControllerTest {
         given(vendorRepository.findAll()).willReturn(Flux.just(Vendor.builder().firstName("Joe").lastName("Buck").build(),
                 Vendor.builder().firstName("Kayne").lastName("West").build()));
 
-        webTestClient.get().uri("/api/v1/vendors")
+        webTestClient.get().uri(VendorController.API_V1_VENDORS)
                 .exchange()
                 .expectBodyList(Vendor.class)
                 .hasSize(2);
@@ -41,7 +41,7 @@ public class VendorControllerTest {
     public void testGetById() {
         given(vendorRepository.findById(anyString())).willReturn(Mono.just(Vendor.builder().firstName("Kayne").lastName("West").build()));
 
-        webTestClient.get().uri("/api/v1/vendors/someid")
+        webTestClient.get().uri(VendorController.API_V1_VENDORS + "/someid")
                 .exchange()
                 .expectBodyList(Vendor.class);
 
