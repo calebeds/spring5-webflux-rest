@@ -10,10 +10,11 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 public class CategoryControllerTest {
 
@@ -76,5 +77,56 @@ public class CategoryControllerTest {
                 .exchange()
                 .expectStatus()
                 .isOk();
+    }
+
+    @Test
+    public void testPatchWithChanges() {
+        given(categoryRepository.findById(anyString())).willReturn(Mono.just(Category.builder().description("something").build()));
+        given(categoryRepository.save(any(Category.class))).willReturn(Mono.just(Category.builder().build()));
+
+        Mono<Category> categoryToPatchMono = Mono.just(Category.builder().description("Some category").build());
+
+        webTestClient.patch()
+                .uri(CategoryController.API_V1_CATEGORIES + "/someid")
+                .body(categoryToPatchMono, Category.class)
+                .exchange()
+                .expectStatus()
+                .isOk();
+
+        verify(categoryRepository).save(any());
+    }
+
+    @Test
+    public void testPatchNoChanges() {
+        given(categoryRepository.findById(anyString())).willReturn(Mono.just(Category.builder().build()));
+        given(categoryRepository.save(any(Category.class))).willReturn(Mono.just(Category.builder().build()));
+
+        Mono<Category> categoryToPatchMono = Mono.just(Category.builder().build());
+
+        webTestClient.patch()
+                .uri(CategoryController.API_V1_CATEGORIES + "/someid")
+                .body(categoryToPatchMono, Category.class)
+                .exchange()
+                .expectStatus()
+                .isOk();
+
+        verify(categoryRepository, never()).save(any());
+    }
+
+    @Test
+    public void testPatchSameDescription() {
+        given(categoryRepository.findById(anyString())).willReturn(Mono.just(Category.builder().description("description").build()));
+        given(categoryRepository.save(any(Category.class))).willReturn(Mono.just(Category.builder().build()));
+
+        Mono<Category> categoryToPatchMono = Mono.just(Category.builder().description("description").build());
+
+        webTestClient.patch()
+                .uri(CategoryController.API_V1_CATEGORIES + "/someid")
+                .body(categoryToPatchMono, Category.class)
+                .exchange()
+                .expectStatus()
+                .isOk();
+
+        verify(categoryRepository, never()).save(any());
     }
 }
